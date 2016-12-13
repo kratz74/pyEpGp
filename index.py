@@ -19,17 +19,19 @@ enc_print('<html>')
 enc_print('  <head>')
 enc_print('    <meta charset="utf-8">')
 enc_print('    <link rel="stylesheet" href="styles.css"/>')
-enc_print('    <title>List of Players</title>')
+enc_print('    <title>Guild EP/GP Status</title>')
 enc_print('  </head>')
 enc_print('  <body>')
 
 dynamodb = boto3.resource('dynamodb', region_name="us-west-2",
     aws_access_key_id='epgp', aws_secret_access_key='EpGpAccessKey', endpoint_url="http://172.31.20.228:8000")
 
+enc_print('    <h1>Guild EP/GP Status</h1>')
+
 guildTab = dynamodb.Table('guild')
 guildResp = guildTab.scan()
 if 'Items' in guildResp:
-    enc_print('    <h1>Guild info</h1>')
+    enc_print('    <h2>Guild info</h2>')
     guildItems = guildResp['Items']
     enc_print('    <table>')
     for item in guildItems:
@@ -61,7 +63,7 @@ if 'Items' in guildResp:
         enc_print('     </tr>')
     enc_print('    </table>')
 
-enc_print('    <h1>Guild Characters</h1>')
+enc_print('    <h2>Guild Characters</h2>')
 
 
 enc_print('    <table>')
@@ -84,7 +86,7 @@ if 'Items' in charResp:
 
 enc_print('    </table>')
 
-enc_print('    <h1>Loot Log</h1>')
+enc_print('    <h2>Loot Log</h2>')
 enc_print('    <table>')
 enc_print('     <tr>')
 enc_print('      <th align="left">Date:</td>')

@@ -69,7 +69,7 @@ enc_print('<html>')
 enc_print('  <head>')
 enc_print('    <meta charset="utf-8">')
 enc_print('    <link rel="stylesheet" href="styles.css"/>')
-enc_print('    <title>List of Players</title>')
+enc_print('    <title>EP/GP Addon Data Import Log</title>')
 enc_print('  </head>')
 enc_print('  <body>')
 
@@ -98,7 +98,8 @@ guildTab.put_item(Item={
     'min_ep': data['min_ep'], 'base_gp': data['base_gp'], 'decay_p': data['decay_p'],
     'extras_p': data['extras_p'], 'timestamp': data['timestamp']})
 
-enc_print('    <h1>Stored Guild</h1>')
+enc_print('    <h1>EP/GP Addon Data Import Log</h1>')
+enc_print('    <h2>Stored Guild</h2>')
 enc_print('    <table>')
 enc_print('     <tr>')
 enc_print('      <th align="left">Name</td>')
@@ -122,7 +123,7 @@ enc_print('      <td align="left">', data['decay_p'], '</td>')
 enc_print('     </tr>')
 enc_print('    </table>')
 
-enc_print('    <h1>Stored Characters</h1>')
+enc_print('    <h2>Stored Characters</h2>')
 enc_print('    <table>')
 enc_print('     <tr>')
 enc_print('      <th align="left">Character Name</td>')
@@ -139,7 +140,7 @@ for person in data['roster']:
 
 enc_print('    </table>')
 
-enc_print('    <h1>Loot Log</h1>')
+enc_print('    <h2>Loot Log</h2>')
 enc_print('    <table>')
 enc_print('     <tr>')
 enc_print('      <th align="left">Date:</td>')
