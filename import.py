@@ -37,6 +37,29 @@ def open_table(db, name):
             })
     return table
 
+def open_loot_table(db, name):
+    table = db.Table(name)
+    #table.delete()
+    try:
+        crTs = table.creation_date_time
+        charactersMissing = False
+    except botocore.exceptions.ClientError:
+        charactersMissing = True
+    if charactersMissing == True:
+        table = dynamodb.create_table(
+            TableName=name,
+            KeySchema=[{'AttributeName': 'name', 'KeyType': 'HASH'},
+                {'AttributeName': 'timestamp', 'KeyType': 'RANGE'}],
+            AttributeDefinitions=[
+                {'AttributeName': 'name', 'AttributeType': 'S'},
+                {'AttributeName': 'timestamp', 'AttributeType': 'N'}
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 5,
+                'WriteCapacityUnits': 5
+            })
+    return table
+
 cgitb.enable()
 
 enc_print("Content-Type: text/html; charset=utf-8")
@@ -57,26 +80,8 @@ dynamodb = boto3.resource('dynamodb', region_name="us-west-2",
     aws_access_key_id='epgp', aws_secret_access_key='EpGpAccessKey', endpoint_url="http://172.31.20.228:8000")
 
 guildTab = open_table(dynamodb, 'guild')
-lootTab = open_table(dynamodb, 'loot')
-
-table = dynamodb.Table('characters')
-try:
-    crTs = table.creation_date_time
-    charactersMissing = False
-except botocore.exceptions.ClientError:
-    charactersMissing = True
-
-if charactersMissing == True:
-    table = dynamodb.create_table(
-        TableName='characters',
-        KeySchema=[{'AttributeName': 'name', 'KeyType': 'HASH'}],
-        AttributeDefinitions=[
-            {'AttributeName': 'name', 'AttributeType': 'S'}
-        ],
-        ProvisionedThroughput={
-            'ReadCapacityUnits': 5,
-            'WriteCapacityUnits': 5
-        })
+lootTab = open_loot_table(dynamodb, 'loot')
+charTab = open_table(dynamodb, 'characters')
 
 form = cgi.FieldStorage()
 fileitem = form["data"]
@@ -125,7 +130,7 @@ enc_print('      <th align="left">Effort Points</td>')
 enc_print('      <th align="left">Gear Points</td>')
 enc_print('     </tr>')
 for person in data['roster']:
-    table.put_item(Item={'name': person[0], 'guild': data['guild'], 'ep': person[1], 'gp': person[2]})
+    charTab.put_item(Item={'name': person[0], 'guild': data['guild'], 'ep': person[1], 'gp': person[2]})
     enc_print('     <tr>')
     enc_print('       <td align="left">', person[0], '</td>')
     enc_print('       <td align="left">', person[1], '</td>')

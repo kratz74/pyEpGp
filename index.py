@@ -2,6 +2,7 @@
 
 import boto3, botocore
 import os, sys
+import datetime
 
 def enc_print(*strings):
     for string in strings:
@@ -10,7 +11,6 @@ def enc_print(*strings):
         else:
             sys.stdout.buffer.write(str(string).encode('UTF-8'))
     sys.stdout.buffer.write(b'\n')
-
 
 enc_print("Content-Type: text/html; charset=utf-8")
 enc_print()
@@ -22,10 +22,47 @@ enc_print('    <link rel="stylesheet" href="styles.css"/>')
 enc_print('    <title>List of Players</title>')
 enc_print('  </head>')
 enc_print('  <body>')
-enc_print('    <h1>Guild Characters</h1>')
 
 dynamodb = boto3.resource('dynamodb', region_name="us-west-2",
     aws_access_key_id='epgp', aws_secret_access_key='EpGpAccessKey', endpoint_url="http://172.31.20.228:8000")
+
+guildTab = dynamodb.Table('guild')
+guildResp = guildTab.scan()
+if 'Items' in guildResp:
+    enc_print('    <h1>Guild info</h1>')
+    guildItems = guildResp['Items']
+    enc_print('    <table>')
+    for item in guildItems:
+        tsStr = datetime.datetime.fromtimestamp(int(item['timestamp'])).strftime('%d.%m.%Y %H:%M:%S')
+        enc_print('     <tr>')
+        enc_print('     <tr>')
+        enc_print('      <th align="left">Name:</td>')
+        enc_print('      <td align="left">', item['name'], '</td>')
+        enc_print('     </tr>')
+        enc_print('     <tr>')
+        enc_print('      <th align="left">Realm:</td>')
+        enc_print('      <td align="left">', item['realm'], ':', item['region'], '</td>')
+        enc_print('     </tr>')
+        enc_print('     <tr>')
+        enc_print('      <th align="left">Min EP:</td>')
+        enc_print('      <td align="left">', item['min_ep'], '</td>')
+        enc_print('     </tr>')
+        enc_print('     <tr>')
+        enc_print('      <th align="left">Base GP:</td>')
+        enc_print('      <td align="left">', item['base_gp'], '</td>')
+        enc_print('     </tr>')
+        enc_print('     <tr>')
+        enc_print('      <th align="left">Decay [%]:</td>')
+        enc_print('      <td align="left">', item['decay_p'], '</td>')
+        enc_print('     </tr>')
+        enc_print('     <tr>')
+        enc_print('      <th align="left">Last Update:</td>')
+        enc_print('      <td align="left">', tsStr, '</td>')
+        enc_print('     </tr>')
+    enc_print('    </table>')
+
+enc_print('    <h1>Guild Characters</h1>')
+
 
 enc_print('    <table>')
 enc_print('     <tr>')
@@ -42,6 +79,30 @@ if 'Items' in charResp:
         enc_print('     <tr>')
         enc_print('       <td align="left">', item['name'], '</td>')
         enc_print('       <td align="left">', item['ep'], '</td>')
+        enc_print('       <td align="left">', item['gp'], '</td>')
+        enc_print('     </tr>')
+
+enc_print('    </table>')
+
+enc_print('    <h1>Loot Log</h1>')
+enc_print('    <table>')
+enc_print('     <tr>')
+enc_print('      <th align="left">Date:</td>')
+enc_print('      <th align="left">Name:</td>')
+enc_print('      <th align="left">Item:</td>')
+enc_print('      <th align="left">Gear Points:</td>')
+enc_print('     </tr>')
+
+lootTab = dynamodb.Table('loot')
+lootResp = lootTab.scan()
+if 'Items' in lootResp:
+    lootItems = lootResp['Items']
+    for item in lootItems:
+        tsStr = datetime.datetime.fromtimestamp(int(item['timestamp'])).strftime('%d.%m.%Y %H:%M:%S')
+        enc_print('     <tr>')
+        enc_print('       <td align="left">', tsStr, '</td>')
+        enc_print('       <td align="left">', item['name'], '</td>')
+        enc_print('       <td align="left">', item['item'], '</td>')
         enc_print('       <td align="left">', item['gp'], '</td>')
         enc_print('     </tr>')
 
