@@ -5,18 +5,49 @@ Project Files
 -------------
 git clone https://github.com/kratz74/pyEpGp.git epgp
 
-Web Application Image
----------------------
-$ cd epgp/docker/
+DynamoDB Image
+--------------
+$ cd epgp/docker/db
 $ wget https://partner-images.canonical.com/core/yakkety/current/ubuntu-yakkety-core-cloudimg-amd64-root.tar.gz
 $ docker build .
-$ docker tag 404a47127144 gcr.io/<project-id>/epgp:v2
+$ docker tag <image-id> gcr.io/<project-id>/dynamo:v1
+$ docker push gcr.io/<project-id>/dynamo:v1
+
+Web Application Image
+---------------------
+DynamoDB IP is hardcoded in Python scripts so code must be updated to point
+to proper database.
+
+$ cd epgp/docker/web
+$ wget https://partner-images.canonical.com/core/yakkety/current/ubuntu-yakkety-core-cloudimg-amd64-root.tar.gz
+$ docker build .
+$ docker tag <image-id> gcr.io/<project-id>/epgp:v2
 $ gcloud docker -- push gcr.io/<project-id>/epgp:v2
 
 Initialize Cloud
 ================
 $ gcloud config set compute/zone europe-west1-d
 
+DynamoDB
+--------
+
+Local DynamoDB instance seems not to support high availability. It's running
+as a single instance.
+
+Container cluster configuration was done manually using
+Google Cloud Console: Compute > Container Engine > Container Clusters
+
+$ gcloud container clusters create dynamo
+$ gcloud container clusters get-credentials dynamo
+$ kubectl run dynamo --image=gcr.io/epgp-152513/dynamo:v1 --port=8000
+$ kubectl expose deployment dynamo
+$ kubectl get services dynamo
+$ kubectl get services dynamo
+NAME      CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+dynamo    10.2.252.206   <none>        8000/TCP   1m
+
+Web Application
+---------------
 Container cluster configuration was done manually using
 Google Cloud Console: Compute > Container Engine > Container Clusters
 
@@ -36,3 +67,4 @@ $ kubectl expose deployment epgp --type="LoadBalancer"
 $ kubectl get services epgp
 NAME      CLUSTER-IP    EXTERNAL-IP   PORT(S)   AGE
 epgp      10.1.254.49   35.187.2.9    80/TCP    57s
+
