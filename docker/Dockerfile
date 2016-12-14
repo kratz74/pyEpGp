@@ -37,7 +37,7 @@ RUN set -xe \
 # Upgrade system
         && apt-get upgrade \
 # Install software
-        && apt-get -y install joe mc apache2 python3-pip \
+        && apt-get -y install joe mc apache2 python3-pip git \
 # Install and upgrade Python modules
         && pip3 install --upgrade pip \
         && pip3 install boto3 \
@@ -62,6 +62,7 @@ RUN set -xe \
                -e '/<\/VirtualHost>/s/\(<\/VirtualHost>\)/\n        # Python scripts\n        AddHandler cgi-script .py\n\n\1/' \
                000-default.conf.orig > 000-default.conf ) \
         && cat /etc/apache2/sites-available/000-default.conf \
+        && (cd /var/www && rm -rf * && git clone https://github.com/kratz74/pyEpGp.git .) \
         && mkdir -v /opt/bin \
         && chmod -v u=rwx,og=rx /opt/bin \
         && echo '#!/bin/bash' > /opt/bin/start.sh \
