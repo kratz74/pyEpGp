@@ -21,8 +21,8 @@ to proper database.
 $ cd epgp/docker/web
 $ wget https://partner-images.canonical.com/core/yakkety/current/ubuntu-yakkety-core-cloudimg-amd64-root.tar.gz
 $ docker build .
-$ docker tag <image-id> gcr.io/<project-id>/epgp:v2
-$ gcloud docker -- push gcr.io/<project-id>/epgp:v2
+$ docker tag <image-id> gcr.io/<project-id>/epgp:v3
+$ gcloud docker -- push gcr.io/<project-id>/epgp:v3
 
 Initialize Cloud
 ================
@@ -37,14 +37,19 @@ as a single instance.
 Container cluster configuration was done manually using
 Google Cloud Console: Compute > Container Engine > Container Clusters
 
-$ gcloud container clusters create dynamo
-$ gcloud container clusters get-credentials dynamo
-$ kubectl run dynamo --image=gcr.io/epgp-152513/dynamo:v1 --port=8000
-$ kubectl expose deployment dynamo
-$ kubectl get services dynamo
-$ kubectl get services dynamo
+$ gcloud container clusters create db
+$ gcloud container clusters get-credentials ddb
+$ kubectl run db --image=gcr.io/epgp-152513/dynamo:v1 --port=8000 --expose
+$ kubectl expose deployment dynamo --type="LoadBalancer"
+$ kubectl get services db
 NAME      CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
-dynamo    10.2.252.206   <none>        8000/TCP   1m
+db        10.2.242.156   <none>        8000/TCP   19m
+
+Unfortunately I'm not able to access port 8000 of this cluster even after
+checking that docker image is up and running properly and I can access
+port 8000 when being inside docker container.
+
+Falling back to epgp:v2 which points to DynamoDB running on AWS.
 
 Web Application
 ---------------
@@ -54,6 +59,7 @@ Google Cloud Console: Compute > Container Engine > Container Clusters
 $ gcloud container clusters create epgp
 $ gcloud container clusters get-credentials epgp
 $ kubectl run epgp --image=gcr.io/epgp-152513/epgp:v2 --port=80
+
 
 $ kubectl get deployments
 NAME      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
@@ -67,4 +73,9 @@ $ kubectl expose deployment epgp --type="LoadBalancer"
 $ kubectl get services epgp
 NAME      CLUSTER-IP    EXTERNAL-IP   PORT(S)   AGE
 epgp      10.1.254.49   35.187.2.9    80/TCP    57s
+
+Update container:
+
+$ gcloud container clusters get-credentials epgp
+$ kubectl set image deployment/epgp epgp=gcr.io/epgp-152513/epgp:v3
 
