@@ -38,9 +38,8 @@ Container cluster configuration was done manually using
 Google Cloud Console: Compute > Container Engine > Container Clusters
 
 $ gcloud container clusters create db
-$ gcloud container clusters get-credentials ddb
-$ kubectl run db --image=gcr.io/epgp-152513/dynamo:v1 --port=8000 --expose
-$ kubectl expose deployment dynamo --type="LoadBalancer"
+$ gcloud container clusters get-credentials db
+$ kubectl run db --image=gcr.io/<project-id>/dynamo:v1 --port=8000 --expose
 $ kubectl get services db
 NAME      CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
 db        10.2.242.156   <none>        8000/TCP   19m
@@ -58,7 +57,7 @@ Google Cloud Console: Compute > Container Engine > Container Clusters
 
 $ gcloud container clusters create epgp
 $ gcloud container clusters get-credentials epgp
-$ kubectl run epgp --image=gcr.io/epgp-152513/epgp:v2 --port=80
+$ kubectl run epgp --image=gcr.io/<project-id>/epgp:v2 --port=80
 
 
 $ kubectl get deployments
@@ -78,4 +77,3 @@ Update container:
 
 $ gcloud container clusters get-credentials epgp
 $ kubectl set image deployment/epgp epgp=gcr.io/epgp-152513/epgp:v3
-
