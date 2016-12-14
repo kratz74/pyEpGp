@@ -24,7 +24,7 @@ enc_print('  </head>')
 enc_print('  <body>')
 
 dynamodb = boto3.resource('dynamodb', region_name="us-west-2",
-    aws_access_key_id='epgp', aws_secret_access_key='EpGpAccessKey', endpoint_url="http://172.31.20.228:8000")
+    aws_access_key_id='epgp', aws_secret_access_key='EpGpAccessKey', endpoint_url="http://54.200.238.145:8000")
 
 enc_print('    <h1>Guild EP/GP Status</h1>')
 

@@ -77,7 +77,7 @@ enc_print('  <body>')
 #boto3.set_stream_logger('botocore', level='DEBUG')
 
 dynamodb = boto3.resource('dynamodb', region_name="us-west-2",
-    aws_access_key_id='epgp', aws_secret_access_key='EpGpAccessKey', endpoint_url="http://172.31.20.228:8000")
+    aws_access_key_id='epgp', aws_secret_access_key='EpGpAccessKey', endpoint_url="http://54.200.238.145:8000")
 
 guildTab = open_table(dynamodb, 'guild')
 lootTab = open_loot_table(dynamodb, 'loot')
