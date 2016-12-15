@@ -28,50 +28,49 @@ Initialize Cloud
 ================
 $ gcloud config set compute/zone europe-west1-d
 
+Container cluster configuration was done manually using
+Google Cloud Console: Compute > Container Engine > Container Clusters
+
+$ gcloud container clusters create epgp
+$ gcloud container clusters get-credentials epgp
+
 DynamoDB
 --------
 
 Local DynamoDB instance seems not to support high availability. It's running
 as a single instance.
 
-Container cluster configuration was done manually using
-Google Cloud Console: Compute > Container Engine > Container Clusters
+$ kubectl run db --image=gcr.io/<project-id>/dynamo:v1 --port=8000
+$ kubectl expose deployment db
 
-$ gcloud container clusters create db
-$ gcloud container clusters get-credentials db
-$ kubectl run db --image=gcr.io/<project-id>/dynamo:v1 --port=8000 --expose
 $ kubectl get services db
-NAME      CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
-db        10.2.242.156   <none>        8000/TCP   19m
+NAME      CLUSTER-IP   EXTERNAL-IP   PORT(S)    AGE
+db        10.1.248.4   <none>        8000/TCP   6m
 
-Unfortunately I'm not able to access port 8000 of this cluster even after
-checking that docker image is up and running properly and I can access
-port 8000 when being inside docker container.
+Unfortunately I'm not able to access port 8000 od the database when running it in a separate Google cluster. Because of that, both web and database containers are running in the same cluster.
 
 Falling back to epgp:v2 which points to DynamoDB running on AWS.
 
 Web Application
 ---------------
-Container cluster configuration was done manually using
-Google Cloud Console: Compute > Container Engine > Container Clusters
 
-$ gcloud container clusters create epgp
-$ gcloud container clusters get-credentials epgp
 $ kubectl run epgp --image=gcr.io/<project-id>/epgp:v2 --port=80
-
-
+$ kubectl scale --replicas=2 deployment/epgp
 $ kubectl get deployments
 NAME      DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-epgp      1         1         1            0           19s
+db        1         1         1            1           6m
+epgp      2         2         2            2           19h
 
 $ kubectl get pods
 NAME                    READY     STATUS    RESTARTS   AGE
-epgp-1424212282-tempd   1/1       Running   0          40s
+db-2270544041-j8cfn     1/1       Running   0          7m
+epgp-1424212282-as9ul   1/1       Running   0          8m
+epgp-1424212282-rwvxg   1/1       Running   0          16h
 
 $ kubectl expose deployment epgp --type="LoadBalancer"
 $ kubectl get services epgp
 NAME      CLUSTER-IP    EXTERNAL-IP   PORT(S)   AGE
-epgp      10.1.254.49   35.187.2.9    80/TCP    57s
+epgp      10.1.254.49   35.187.2.9    80/TCP    19h
 
 Update container:
 
