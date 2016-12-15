@@ -35,7 +35,7 @@ RUN set -xe \
 # Update system
         && apt-get update \
 # Upgrade system
-        && apt-get upgrade \
+        && apt-get -y upgrade \
 # Install software
         && apt-get -y install joe mc apache2 python3-pip git \
 # Install and upgrade Python modules

@@ -35,7 +35,7 @@ RUN set -xe \
 # Update system
         && apt-get update \
 # Upgrade system
-        && apt-get upgrade \
+        && apt-get -y upgrade \
 # Install software
         && apt-get -y install joe mc wget default-jre \
 # delete all the apt list files since they're big and get stale quickly
