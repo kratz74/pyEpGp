@@ -13,6 +13,10 @@ $ docker build .
 $ docker tag <image-id> gcr.io/<project-id>/dynamo:v1
 $ docker push gcr.io/<project-id>/dynamo:v1
 
+If docker push fails with request failed with status: 403 Forbidden, you have to login again
+
+$ docker login -e <login> -u _token -p "$(gcloud auth print-access-token)" https://gcr.io
+
 Web Application Image
 ---------------------
 DynamoDB IP is hardcoded in Python scripts so code must be updated to point
